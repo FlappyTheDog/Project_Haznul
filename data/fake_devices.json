@@ -1,0 +1,18 @@
+[
+    {
+        "host": "unknown-sniffer-node.local",
+        "custom": "None",
+        "ip": "192.168.1.66",
+        "dev_type": "spy-device",
+        "open_ports": "22, 4444, 5555",
+        "privacy_id": "fake_rogue_hash_1"
+    },
+    {
+        "host": "rogue-malware-implanted-tv",
+        "custom": "None",
+        "ip": "192.168.1.201",
+        "dev_type": "tv",
+        "open_ports": "80, 6666",
+        "privacy_id": "fake_rogue_hash_2"
+    }
+]
