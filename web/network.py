@@ -1,39 +1,60 @@
 import os
 import sqlite3
 import time
+import json
 from flask import Blueprint, render_template_string, redirect, url_for, request, session
 from web.home import terminal_layout
 
 network_bp = Blueprint('network', __name__)
 DB_FILE = "data/home_safety.db"
+FAKE_FILE = "data/fake_devices.json"
 OFFLINE_THRESHOLD = 600 # 10 minutes
 
 def load_devices_from_db(filter_unnamed: bool = False) -> list:
-    if not os.path.exists(DB_FILE): return []
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    processed_devices = []
     current_time = time.time()
-    try:
-        if filter_unnamed:
-            cursor.execute("SELECT privacy_id, ip, host, custom, dev_type, open_ports, last_seen FROM devices WHERE custom = 'None' OR custom = '' ORDER BY ip ASC")
-        else:
-            cursor.execute("SELECT privacy_id, ip, host, custom, dev_type, open_ports, last_seen FROM devices ORDER BY ip ASC")
-        
-        processed_devices = []
-        for row in cursor.fetchall():
-            d = dict(row)
-            # Evaluate current real-time online status state
-            time_diff = current_time - d["last_seen"]
-            d["status"] = "ONLINE" if time_diff <= OFFLINE_THRESHOLD else "OFFLINE"
+    
+    # 1. Load real devices from the SQLite database if it exists
+    if os.path.exists(DB_FILE):
+        conn = sqlite3.connect(DB_FILE)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        try:
+            if filter_unnamed:
+                cursor.execute("SELECT privacy_id, ip, host, custom, dev_type, open_ports, last_seen FROM devices WHERE custom = 'None' OR custom = '' ORDER BY ip ASC")
+            else:
+                cursor.execute("SELECT privacy_id, ip, host, custom, dev_type, open_ports, last_seen FROM devices ORDER BY ip ASC")
             
-            # Format time stamp to a human-readable layout
-            d["time_string"] = time.strftime('%H:%M:%S', time.localtime(d["last_seen"]))
-            processed_devices.append(d)
-            
-        return processed_devices
-    except sqlite3.OperationalError: return []
-    finally: conn.close()
+            for row in cursor.fetchall():
+                d = dict(row)
+                time_diff = current_time - d["last_seen"]
+                d["status"] = "ONLINE" if time_diff <= OFFLINE_THRESHOLD else "OFFLINE"
+                d["time_string"] = time.strftime('%H:%M:%S', time.localtime(d["last_seen"]))
+                processed_devices.append(d)
+        except sqlite3.OperationalError: pass
+        finally: conn.close()
+
+    # 2. Automatically load the fake devices you typed in your text file
+    if os.path.exists(FAKE_FILE) and os.path.getsize(FAKE_FILE) > 0:
+        with open(FAKE_FILE, "r") as f:
+            try:
+                fake_data = json.load(f)
+                # Apply filter to fake devices too if active
+                if filter_unnamed:
+                    fake_data = [d for d in fake_data if d["custom"] == "None" or d["custom"] == ""]
+                
+                # Format timestamps for fake entries so the dashboard layout works
+                for fd in fake_data:
+                    if "status" not in fd: fd["status"] = "ONLINE"
+                    if "time_string" not in fd: fd["time_string"] = "TACTICAL_INJECT"
+                    processed_devices.append(fd)
+            except Exception: pass
+
+    # Sort the combined list cleanly by IP address
+    try: processed_devices.sort(key=lambda x: [int(num) for num in x["ip"].split(".")])
+    except Exception: pass
+    
+    return processed_devices
 
 @network_bp.route("/network")
 def network_panel():
@@ -71,11 +92,23 @@ def update_custom():
     custom_name = request.form.get("custom_name", "").strip() or "None"
     redirect_unnamed = request.form.get("redirect_unnamed", "false") == "true"
     
-    if privacy_id:
+    # Update SQLite database if it's a real device
+    if privacy_id and not str(privacy_id).startswith("fake_"):
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         cursor.execute("UPDATE devices SET custom = ? WHERE privacy_id = ?", (custom_name, privacy_id))
         conn.commit()
         conn.close()
+    
+    # Update JSON file if it's a fake device typed by you
+    elif privacy_id and str(privacy_id).startswith("fake_") and os.path.exists(FAKE_FILE):
+        with open(FAKE_FILE, "r+") as f:
+            data = json.load(f)
+            for item in data:
+                if item["privacy_id"] == privacy_id:
+                    item["custom"] = custom_name
+            f.seek(0)
+            json.dump(data, f, indent=4)
+            f.truncate()
         
     return redirect(url_for('network.network_panel', unnamed='true' if redirect_unnamed else 'false'))

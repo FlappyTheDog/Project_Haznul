@@ -27,7 +27,7 @@ body::before {
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1250px; /* Widened slightly to give multi-column metadata room to breathe */
   margin: 0 auto;
   border: 2px solid #22ff66;
   padding: 25px;
@@ -44,6 +44,37 @@ body::before {
   letter-spacing: 2px;
   margin-bottom: 25px;
   text-transform: uppercase;
+}
+
+/* Navigation bar tab adjustments */
+.terminal-navbar {
+  display: flex;
+  gap: 15px;
+  border-bottom: 2px dashed #22ff66;
+  padding-bottom: 15px;
+  margin-bottom: 10px;
+}
+
+.nav-btn {
+  color: rgba(34, 255, 102, 0.6);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 6px 12px;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+  color: #22ff66;
+  text-shadow: 0 0 8px rgba(34, 255, 102, 0.8);
+}
+
+.active-nav {
+  color: #020603 !important;
+  background-color: #22ff66 !important;
+  text-shadow: none !important;
+  box-shadow: 0 0 8px rgba(34, 255, 102, 0.5);
 }
 
 .controls {
@@ -73,16 +104,22 @@ button:hover {
   box-shadow: 0 0 10px rgba(34, 255, 102, 0.8);
 }
 
+/* Unified Layout Table Configurations */
 table {
   width: 100%;
+  table-layout: fixed; /* Mandates column sizing rules */
   border-collapse: collapse;
   margin-top: 15px;
 }
 
 th, td {
   text-align: left;
-  padding: 12px;
-  border: 1px solid rgba(34, 255, 102, 0.3);
+  padding: 12px 10px;
+  border: 1px solid rgba(34, 255, 102, 0.2);
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* Keeps IDs, hostnames and text lines cleanly formatted */
 }
 
 th {
@@ -91,6 +128,15 @@ th {
   text-transform: uppercase;
   letter-spacing: 1px;
 }
+
+/* Explicit columns grid allocation percentages preventing right out-of-bounds spillover */
+th:nth-child(1), td:nth-child(1) { width: 22%; } /* Node Hostname */
+th:nth-child(2), td:nth-child(2) { width: 26%; } /* Device Name Field Inputs Area */
+th:nth-child(3), td:nth-child(3) { width: 13%; } /* IP Address */
+th:nth-child(4), td:nth-child(4) { width: 10%; } /* Profile Type */
+th:nth-child(5), td:nth-child(5) { width: 9%; }  /* Status */
+th:nth-child(6), td:nth-child(6) { width: 10%; } /* Last Seen Timestamp */
+th:nth-child(7), td:nth-child(7) { width: 10%; white-space: normal; word-break: break-all; } /* Open Ports Wrap Handler */
 
 .badge {
   border: 1px solid #22ff66;
@@ -107,7 +153,8 @@ th {
   color: rgba(34, 255, 102, 0.7);
   letter-spacing: 1px;
 }
-/* Added terminal style text boxes and compact save buttons */
+
+/* Terminal Input Forms Layout */
 .terminal-input {
   background-color: #010402;
   color: #22ff66;
@@ -115,7 +162,8 @@ th {
   font-family: inherit;
   padding: 4px 8px;
   font-size: 13px;
-  width: 180px;
+  width: 170px !important; /* Perfect spacious size fit */
+  max-width: 100%;
   outline: none;
   text-shadow: 0 0 3px rgba(34, 255, 102, 0.5);
 }
@@ -139,7 +187,8 @@ th {
   background: #22ff66 !important;
   color: #020603 !important;
 }
-/* Terminal style filter toggle buttons */
+
+/* Filtering toggles components */
 .filter-link {
   color: #22ff66;
   text-decoration: none;
