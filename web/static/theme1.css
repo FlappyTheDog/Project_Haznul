@@ -1,0 +1,162 @@
+@keyframes flicker {
+  0% { opacity: 0.98; }
+  50% { opacity: 1; }
+  100% { opacity: 0.99; }
+}
+
+body {
+  background-color: #030a05;
+  color: #22ff66;
+  font-family: "Courier New", Courier, monospace;
+  margin: 0;
+  padding: 30px;
+  text-shadow: 0 0 4px rgba(34, 255, 102, 0.6);
+  animation: flicker 0.15s infinite;
+}
+
+/* Subtle CRT Scanline overlay effect */
+body::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 3px, 3px 100%;
+  pointer-events: none;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  border: 2px solid #22ff66;
+  padding: 25px;
+  background-color: #020603;
+  box-shadow: inset 0 0 20px rgba(34, 255, 102, 0.2), 0 0 15px rgba(34, 255, 102, 0.1);
+}
+
+.terminal-header {
+  background-color: #22ff66;
+  color: #020603;
+  padding: 8px 15px;
+  font-weight: bold;
+  font-size: 18px;
+  letter-spacing: 2px;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px dashed #22ff66;
+  padding-bottom: 15px;
+}
+
+button {
+  background: transparent;
+  color: #22ff66;
+  border: 2px solid #22ff66;
+  padding: 8px 20px;
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 0 0 5px rgba(34, 255, 102, 0.3);
+}
+
+button:hover {
+  background: #22ff66;
+  color: #020603;
+  box-shadow: 0 0 10px rgba(34, 255, 102, 0.8);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+th, td {
+  text-align: left;
+  padding: 12px;
+  border: 1px solid rgba(34, 255, 102, 0.3);
+}
+
+th {
+  border-bottom: 2px solid #22ff66;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.badge {
+  border: 1px solid #22ff66;
+  padding: 2px 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.footer-nav {
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px dashed #22ff66;
+  font-size: 12px;
+  color: rgba(34, 255, 102, 0.7);
+  letter-spacing: 1px;
+}
+/* Added terminal style text boxes and compact save buttons */
+.terminal-input {
+  background-color: #010402;
+  color: #22ff66;
+  border: 1px solid rgba(34, 255, 102, 0.5);
+  font-family: inherit;
+  padding: 4px 8px;
+  font-size: 13px;
+  width: 180px;
+  outline: none;
+  text-shadow: 0 0 3px rgba(34, 255, 102, 0.5);
+}
+
+.terminal-input:focus {
+  border: 1px solid #22ff66;
+  box-shadow: 0 0 5px rgba(34, 255, 102, 0.5);
+}
+
+.mini-btn {
+  background: transparent;
+  color: #22ff66;
+  border: 1px solid #22ff66;
+  padding: 2px 8px !important;
+  font-size: 11px !important;
+  cursor: pointer;
+  letter-spacing: 0px;
+}
+
+.mini-btn:hover {
+  background: #22ff66 !important;
+  color: #020603 !important;
+}
+/* Terminal style filter toggle buttons */
+.filter-link {
+  color: #22ff66;
+  text-decoration: none;
+  border: 1px solid rgba(34, 255, 102, 0.4);
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.filter-link:hover {
+  background: rgba(34, 255, 102, 0.1);
+  box-shadow: 0 0 5px rgba(34, 255, 102, 0.4);
+}
+
+.active-filter {
+  background: #22ff66 !important;
+  color: #020603 !important;
+  box-shadow: 0 0 10px rgba(34, 255, 102, 0.6);
+}
